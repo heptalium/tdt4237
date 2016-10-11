@@ -12,7 +12,7 @@ class SessionsController extends Controller
         parent::__construct();
     }
 
-    public function new()
+    public function authenticate()
     {
         if ($this->auth->check()) {
             $username = $this->auth->user()->getUsername();
