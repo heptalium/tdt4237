@@ -17,8 +17,8 @@ class Sql
      */
     static function up()
     {
-        $q1 = "CREATE TABLE users (id INTEGER PRIMARY KEY, user VARCHAR(50), pass VARCHAR(60), email varchar(50) default null, first_name varchar(50), last_name varchar(50), phone varchar (8), company varchar(50), isadmin INTEGER);";
-        $q6 = "CREATE TABLE patent (patentId INTEGER PRIMARY KEY AUTOINCREMENT, company TEXT NOT NULL, title TEXT NOT NULL, file TEXT NOT NULL, description TEXT NOT NULL, date TEXT NOT NULL, FOREIGN KEY(patentId) REFERENCES users(company));";
+        $q1 = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(50), password VARCHAR(60), email VARCHAR(50), first_name VARCHAR(50), last_name VARCHAR(50), phone VARCHAR(8), company VARCHAR(50), admin INTEGER);";
+        $q6 = "CREATE TABLE patents (id INTEGER PRIMARY KEY AUTOINCREMENT, company VARCHAR(50), title VARCHAR(100), file VARCHAR(200), description TEXT, date CHAR(8));";
 
         self::$pdo->exec($q1);
         self::$pdo->exec($q6);
@@ -35,9 +35,9 @@ class Sql
         $hash2 = Hash::make('techit');
         $hash3 = Hash::make('mundbjar');
 
-        $q1 = "INSERT INTO users(user, pass, isadmin, first_name, last_name, phone, company, email) VALUES ('systemmanager', '$hash1', 1, 'Approv', 'Patents', '53290672', 'Patentsy AS', 'systemmanager@patentsy.com')";
-        $q2 = "INSERT INTO users(user, pass, isadmin, first_name, last_name, phone, company, email) VALUES ('ittechnican', '$hash2', 1, 'Robert', 'Green', '92300847', 'Patentsy AS', 'ittechnican@patentsy.com')";
-        $q3 = "INSERT INTO users(user, pass, isadmin, first_name, last_name, phone, company, email) VALUES ('ceobjarnitorgmund', '$hash3', 1, 'Bjarni', 'Torgmund', '32187625', 'Patentsy AS', 'ceobjarnitorgmund@patentsy.com')";
+        $q1 = "INSERT INTO users(username, password, admin, first_name, last_name, phone, company, email) VALUES ('systemmanager', '$hash1', 1, 'Approv', 'Patents', '53290672', 'Patentsy AS', 'systemmanager@patentsy.com')";
+        $q2 = "INSERT INTO users(username, password, admin, first_name, last_name, phone, company, email) VALUES ('ittechnican', '$hash2', 1, 'Robert', 'Green', '92300847', 'Patentsy AS', 'ittechnican@patentsy.com')";
+        $q3 = "INSERT INTO users(username, password, admin, first_name, last_name, phone, company, email) VALUES ('ceobjarnitorgmund', '$hash3', 1, 'Bjarni', 'Torgmund', '32187625', 'Patentsy AS', 'ceobjarnitorgmund@patentsy.com')";
 
         self::$pdo->exec($q1);
         self::$pdo->exec($q2);
@@ -48,8 +48,8 @@ class Sql
     }
 
     static function insertPatents() {
-        $q4 = "INSERT INTO patent(company, title, file, description, date) VALUES ('Patentsy AS', 'Search System', 'web/uploads/test.txt', 'New algorithm making search as fast as speed of light.', '20062016')";
-        $q5 = "INSERT INTO patent(company, title, file, description, date) VALUES ('Patentsy AS', 'New litteum battery technology', 'web/uploads/test.txt', 'A new technology that will take batteries through a new revolution.', '26072016')";
+        $q4 = "INSERT INTO patents(company, title, file, description, date) VALUES ('Patentsy AS', 'Search System', 'web/uploads/test.txt', 'New algorithm making search as fast as speed of light.', '20062016')";
+        $q5 = "INSERT INTO patents(company, title, file, description, date) VALUES ('Patentsy AS', 'New litteum battery technology', 'web/uploads/test.txt', 'A new technology that will take batteries through a new revolution.', '26072016')";
 
         self::$pdo->exec($q4);
         self::$pdo->exec($q5);
@@ -60,7 +60,7 @@ class Sql
     static function down()
     {
         $q1 = "DROP TABLE users";
-        $q4 = "DROP TABLE patent";
+        $q4 = "DROP TABLE patents";
 
         self::$pdo->exec($q1);
         self::$pdo->exec($q4);

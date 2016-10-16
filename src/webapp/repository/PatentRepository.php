@@ -8,10 +8,6 @@ use tdt4237\webapp\models\PatentCollection;
 
 class PatentRepository
 {
-
-    /**
-     * @var PDO
-     */
     private $pdo;
 
     public function __construct(PDO $pdo)
@@ -19,10 +15,10 @@ class PatentRepository
         $this->pdo = $pdo;
     }
 
-    public function makePatentFromRow(array $row)
+    private function makePatentFromRow(array $row)
     {
-        $patent = new Patent($row['patentId'], $row['company'], $row['title'], $row['description'], $row['date'], $row['file']);
-        $patent->setPatentId($row['patentId']);
+        $patent = new Patent($row['id'], $row['company'], $row['title'], $row['description'], $row['date'], $row['file']);
+        $patent->setPatentId($row['id']);
         $patent->setCompany($row['company']);
         $patent->setTitle($row['title']);
         $patent->setDescription($row['description']);
@@ -32,62 +28,46 @@ class PatentRepository
         return $patent;
     }
 
-
-    public function find($patentId)
+    public function find($id)
     {
-        $sql  = "SELECT * FROM patent WHERE patentId = $patentId";
-        $result = $this->pdo->query($sql);
-        $row = $result->fetch();
-
-        if($row === false) {
+        $statement = $this->pdo->prepare('SELECT * FROM patents WHERE id = ?');
+        $statement->execute(array($id));
+        if ($statement->rowCount()) {
+            return $this->makePatentFromRow($statement->fetch());
+        } else {
             return false;
         }
-
-
-        return $this->makePatentFromRow($row);
     }
 
     public function all()
     {
-        $sql   = "SELECT * FROM patent";
-        $results = $this->pdo->query($sql);
-
-        if($results === false) {
-            return [];
-            throw new \Exception('PDO error in patent all()');
+        $statement = $this->pdo->prepare('SELECT * FROM patents');
+        $statement->execute();
+        $patents = array();
+        while ($row = $statement->fetch()) {
+            $patents[] = $this->makePatentFromRow($row);
         }
-
-        $fetch = $results->fetchAll();
-        if(count($fetch) == 0) {
-            return false;
-        }
-
-        return new PatentCollection(
-            array_map([$this, 'makePatentFromRow'], $fetch)
-        );
+        return new PatentCollection($patents);
     }
 
-    public function deleteByPatentid($patentId)
+    public function deleteByPatentid($id)
     {
-        return $this->pdo->exec(
-            sprintf("DELETE FROM patent WHERE patentid='%s';", $patentId));
+        $statement = $this->pdo->prepare('DELETE FROM patents WHERE id = ?');
+        $result = $statement->execute(array($id));
+        return $result;
     }
 
 
     public function save(Patent $patent)
     {
-        $title          = $patent->getTitle();
-        $company        = $patent->getCompany();
-        $description    = $patent->getDescription();
-        $date           = $patent->getDate();
-        $file           = $patent->getFile();
-
-        if ($patent->getPatentId() === null) {
-            $query = "INSERT INTO patent (company, date, title, description, file) "
-                . "VALUES ('$company', '$date', '$title', '$description', '$file')";
-        }
-
-        $this->pdo->exec($query);
+        $statement = $this->pdo->prepare('INSERT INTO patents (title, company, file, description, date) VALUES (?, ?, ?, ?, ?)');
+        $result = $statement->execute(array(
+            $patent->getTitle(),
+            $patent->getCompany(),
+            $patent->getFile(),
+            $patent->getDescription(),
+            $patent->getDate()
+        ));
         return $this->pdo->lastInsertId();
     }
 }
