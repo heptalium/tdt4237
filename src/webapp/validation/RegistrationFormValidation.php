@@ -31,6 +31,18 @@ class RegistrationFormValidation
             $this->validationErrors[] = 'Password cannot be empty';
         }
 
+        if (strlen($password) < 8) {
+            $this->validationErrors[] = "Password length >= 8!";
+        }
+
+        if (!preg_match("#[0-9]+#", $password)) {
+            $this->validationErrors[] = "Password must include at least one number!";
+        }
+
+        if (!preg_match("#[a-zA-Z]+#", $password)) {
+            $this->validationErrors[] = "Password must include at least one letter!";
+        }
+
         if(empty($first_name)) {
             $this->validationErrors[] = "Please write in your first name";
         }
