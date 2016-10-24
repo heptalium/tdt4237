@@ -3,7 +3,7 @@
 namespace tdt4237\webapp\controllers;
 
 use tdt4237\webapp\models\Patent;
-use tdt4237\webapp\controllers\UserController;
+use tdt4237\webapp\controllers\FilesController;
 use tdt4237\webapp\validation\PatentValidation;
 
 class PatentsController extends Controller
@@ -96,12 +96,8 @@ class PatentsController extends Controller
     {
         if(isset($_POST['submit']))
         {
-            $target_dir =  getcwd()."/web/uploads/";
-            $targetFile = $target_dir . basename($_FILES['uploaded']['name']);
-            if(move_uploaded_file($_FILES['uploaded']['tmp_name'], $targetFile))
-            {
-                return $targetFile;
-            }
+            $file = new FilesController();
+            return $file->put($_FILES['uploaded']);
         }
     }
 

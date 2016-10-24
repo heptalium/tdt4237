@@ -7,11 +7,11 @@ use tdt4237\webapp\Auth;
 use tdt4237\webapp\Hash;
 use tdt4237\webapp\repository\UserRepository;
 use tdt4237\webapp\repository\PatentRepository;
+use tdt4237\webapp\repository\FileRepository;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 chdir(__DIR__ . '/../');
-chmod(__DIR__ . '/../web/uploads', 0777);
 
 $app = new Slim([
     'templates.path' => __DIR__.'/webapp/templates/',
@@ -42,6 +42,7 @@ date_default_timezone_set("Europe/Oslo");
 $app->hash = new Hash();
 $app->userRepository = new UserRepository($app->db);
 $app->patentRepository = new PatentRepository($app->db);
+$app->fileRepository = new FileRepository($app->db);
 $app->auth = new Auth($app->userRepository, $app->hash);
 
 $ns ='tdt4237\\webapp\\controllers\\';
@@ -77,6 +78,9 @@ $app->post('/patents/register', $ns . 'PatentsController:create');
 $app->get('/patents/:patentId', $ns . 'PatentsController:show');
 
 $app->get('/patents/:patentId/delete', $ns . 'PatentsController:destroy');
+
+// Files
+$app->get('/files/:id/:name', $ns . 'FilesController:get');
 
 // Admin restricted area
 $app->get('/admin', $ns . 'AdminController:index')->name('admin');

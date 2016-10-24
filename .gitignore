@@ -4,3 +4,7 @@ vendor/
 # Files
 app.db
 composer.phar
+
+# Upload directory
+uploads/*
+!uploads/.htaccess

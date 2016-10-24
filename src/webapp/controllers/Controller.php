@@ -9,13 +9,14 @@ class Controller
     protected $userRepository;
     protected $auth;
     protected $patentRepository;
+    protected $fileRepository;
 
     public function __construct()
     {
         $this->app = \Slim\Slim::getInstance();
         $this->userRepository = $this->app->userRepository;
         $this->patentRepository = $this->app->patentRepository;
-        $this->patentRepository = $this->app->patentRepository;
+        $this->fileRepository = $this->app->fileRepository;
         $this->auth = $this->app->auth;
         $this->hash = $this->app->hash;
     }
