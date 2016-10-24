@@ -42,9 +42,9 @@ class UserRepository
     {
         $statement = $this->pdo->prepare('SELECT given_name, last_name FROM users WHERE username = ?');
         $statement->execute(array($username));
-        if ($statement->rowCount()) {
-            $row = $statement->fetch();
-            return ($row['first_name'].' '.$row['last_name']);
+        $result = $statement->fetch();
+        if ($result !== false) {
+            return ($result['first_name'].' '.$result['last_name']);
         } else {
             return false;
         }
@@ -54,8 +54,9 @@ class UserRepository
     {
         $statement = $this->pdo->prepare('SELECT * FROM users WHERE username = ?');
         $statement->execute(array($username));
-        if ($statement->rowCount()) {
-            return $this->makeUserFromRow($statement->fetch());
+        $result = $statement->fetch();
+        if ($result !== false) {
+            return $this->makeUserFromRow($result);
         } else {
             return false;
         }

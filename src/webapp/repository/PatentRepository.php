@@ -32,8 +32,9 @@ class PatentRepository
     {
         $statement = $this->pdo->prepare('SELECT * FROM patents WHERE id = ?');
         $statement->execute(array($id));
-        if ($statement->rowCount()) {
-            return $this->makePatentFromRow($statement->fetch());
+        $result = $statement->fetch();
+        if ($result !== false) {
+            return $this->makePatentFromRow($result);
         } else {
             return false;
         }
