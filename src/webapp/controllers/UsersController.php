@@ -49,11 +49,16 @@ class UsersController extends Controller
 
             $validation = new RegistrationFormValidation($username, $password, $firstName, $lastName, $phone, $company);
             if ($validation->isGoodToGo()) {
-                $password = $this->hash->make($password);
-                $user = new User($username, $password, $firstName, $lastName, $phone, $company);
-                $this->userRepository->save($user);
-                $this->app->flash('info', 'Thanks for creating a user. Now log in.');
-                $this->app->redirect('/login');
+                if (!$this->userRepository->findByUser($username)) {
+                    $password = $this->hash->make($password);
+                    $user = new User($username, $password, $firstName, $lastName, $phone, $company);
+                    $this->userRepository->save($user);
+                    $this->app->flash('info', 'Thanks for creating a user. Now log in.');
+                    $this->app->redirect('/login');
+                } else {
+                    $this->app->flashNow('error', "User '$username' already exists!");
+                    $this->render('users/new.twig');
+                }
             } else {
                 $errors = join("<br>", $validation->getValidationErrors());
                 $this->app->flashNow('error', $errors);
