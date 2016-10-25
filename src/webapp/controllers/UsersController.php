@@ -18,22 +18,10 @@ class UsersController extends Controller
 
     public function show($username)
     {
-        if ($this->auth->guest()) {
-            $this->app->flash("info", "You must be logged in to do that");
-            $this->app->redirect("/login");
-
-        } else {
+        if ($this->checkUserLevel(2)) {
             $user = $this->userRepository->findByUser($username);
-
-            if ($user != false && $user->getUsername() == $this->auth->getUsername()) {
-
+            if ($user !== false) {
                 $this->render('users/showExtended.twig', [
-                    'user' => $user,
-                    'username' => $username
-                ]);
-            } else if ($this->auth->check()) {
-
-                $this->render('users/show.twig', [
                     'user' => $user,
                     'username' => $username
                 ]);
@@ -43,99 +31,86 @@ class UsersController extends Controller
 
     public function createuser()
     {
-        if ($this->auth->guest()) {
+        if ($this->checkUserLevel(0)) {
             return $this->render('users/new.twig', []);
         }
-
-        $username = $this->auth->user()->getUserName();
-        $this->app->flash('info', 'You are already logged in as ' . $username);
-        $this->app->redirect('/');
     }
 
     public function create()
     {
-        $request  = $this->app->request;
-        $username = $request->post('user');
-        $password = $request->post('pass');
-        $firstName = $request->post('first_name');
-        $lastName = $request->post('last_name');
-        $phone = $request->post('phone');
-        $company = $request->post('company');
+        if ($this->checkUserLevel(0)) {
+            $request  = $this->app->request;
+            $username = $request->post('user');
+            $password = $request->post('pass');
+            $firstName = $request->post('first_name');
+            $lastName = $request->post('last_name');
+            $phone = $request->post('phone');
+            $company = $request->post('company');
 
-
-        $validation = new RegistrationFormValidation($username, $password, $firstName, $lastName, $phone, $company);
-
-        if ($validation->isGoodToGo()) {
-            $password = $password;
-            $password = $this->hash->make($password);
-            $user = new User($username, $password, $firstName, $lastName, $phone, $company);
-            $this->userRepository->save($user);
-
-            $this->app->flash('info', 'Thanks for creating a user. Now log in.');
-            return $this->app->redirect('/login');
+            $validation = new RegistrationFormValidation($username, $password, $firstName, $lastName, $phone, $company);
+            if ($validation->isGoodToGo()) {
+                $password = $this->hash->make($password);
+                $user = new User($username, $password, $firstName, $lastName, $phone, $company);
+                $this->userRepository->save($user);
+                $this->app->flash('info', 'Thanks for creating a user. Now log in.');
+                $this->app->redirect('/login');
+            } else {
+                $errors = join("<br>", $validation->getValidationErrors());
+                $this->app->flashNow('error', $errors);
+                $this->render('users/new.twig', ['username' => $username]);
+            }
         }
-
-        $errors = join("<br>\n", $validation->getValidationErrors());
-        $this->app->flashNow('error', $errors);
-        $this->render('users/new.twig', ['username' => $username]);
     }
 
     public function edit()
     {
-        $this->makeSureUserIsAuthenticated();
-
-        $this->render('users/edit.twig', [
-            'user' => $this->auth->user()
-        ]);
+        if ($this->checkUserLevel(1)) {
+            $this->render('users/edit.twig', [
+                'user' => $this->auth->user()
+            ]);
+        }
     }
 
     public function update()
     {
-        $this->makeSureUserIsAuthenticated();
-        $user = $this->auth->user();
+        if ($this->checkUserLevel(1)) {
+            $user = $this->auth->user();
 
-        $request    = $this->app->request;
-        $email      = $request->post('email');
-        $firstName  = $request->post('first_name');
-        $lastName  = $request->post('last_name');
-        $phone    = $request->post('phone');
-        $company   = $request->post('company');
+            $request    = $this->app->request;
+            $email      = $request->post('email');
+            $firstName  = $request->post('first_name');
+            $lastName  = $request->post('last_name');
+            $phone    = $request->post('phone');
+            $company   = $request->post('company');
 
-        $validation = new EditUserFormValidation($email, $phone, $company);
+            $validation = new EditUserFormValidation($email, $phone, $company);
+            if ($validation->isGoodToGo()) {
+                $user->setEmail(new Email($email));
+                $user->setCompany($company);
+                $user->setPhone(new Phone($phone));
+                $user->setFirstName($firstName);
+                $user->setLastName($lastName);
+                $this->userRepository->save($user);
 
-        if ($validation->isGoodToGo()) {
-            $user->setEmail(new Email($email));
-            $user->setCompany($company);
-            $user->setPhone(new Phone($phone));
-            $user->setFirstName($firstName);
-            $user->setLastName($lastName);
-            $this->userRepository->save($user);
-
-            $this->app->flashNow('info', 'Your profile was successfully saved.');
-            return $this->render('users/edit.twig', ['user' => $user]);
+                $this->app->flashNow('info', 'Your profile was successfully saved.');
+                return $this->render('users/edit.twig', ['user' => $user]);
+            } else {
+                $this->app->flashNow('error', join("<br>", $validation->getValidationErrors()));
+                $this->render('users/edit.twig', ['user' => $user]);
+            }
         }
-
-        $this->app->flashNow('error', join('<br>', $validation->getValidationErrors()));
-        $this->render('users/edit.twig', ['user' => $user]);
     }
 
     public function destroy($username)
     {
-        if ($this->userRepository->deleteByUsername($username) === 1) {
-            $this->app->flash('info', "Sucessfully deleted '$username'");
-            $this->app->redirect('/admin');
-            return;
-        }
-
-        $this->app->flash('info', "An error ocurred. Unable to delete user '$username'.");
-        $this->app->redirect('/admin');
-    }
-
-    public function makeSureUserIsAuthenticated()
-    {
-        if ($this->auth->guest()) {
-            $this->app->flash('info', 'You must be logged in to edit your profile.');
-            $this->app->redirect('/login');
+        if ($this->checkUserLevel(2)) {
+            if ($this->userRepository->deleteByUsername($username)) {
+                $this->app->flash('info', "Sucessfully deleted '$username'");
+                $this->app->redirect('/admin');
+            } else {
+                $this->app->flash('info', "An error ocurred. Unable to delete user '$username'.");
+                $this->app->redirect('/admin');
+            }
         }
     }
 }

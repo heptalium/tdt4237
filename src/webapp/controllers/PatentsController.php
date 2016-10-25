@@ -17,57 +17,50 @@ class PatentsController extends Controller
 
     public function index()
     {
-        $patent = $this->patentRepository->all();
-        if($patent != null)
-        {
-            $patent->sortByDate();
+        if ($this->checkUserLevel(1)) {
+            $patents = $this->patentRepository->all();
+            if ($patents != null) {
+                $patents->sortByDate();
+            }
+            $users = $this->userRepository->all();
+            $this->render('patents/index.twig', ['patent' => $patents, 'users' => $users]);
         }
-        $users = $this->userRepository->all();
-        $this->render('patents/index.twig', ['patent' => $patent, 'users' => $users]);
     }
 
     public function show($patentId)
     {
-        $patent = $this->patentRepository->find($patentId);
-        $username = $_SESSION['user'];
-        $user = $this->userRepository->findByUser($username);
-        $request = $this->app->request;
-        $message = $request->get('msg');
-        $variables = [];
+        if ($this->checkUserLevel(1)) {
+            $patent = $this->patentRepository->find($patentId);
+            $username = $_SESSION['user'];
+            $user = $this->userRepository->findByUser($username);
+            $request = $this->app->request;
+            $message = $request->get('msg');
+            $variables = [];
 
-        if($message) {
-            $variables['msg'] = $message;
+            if($message) {
+                $variables['msg'] = $message;
 
+            }
+
+            $this->render('patents/show.twig', [
+                'patent' => $patent,
+                'user' => $user,
+                'flash' => $variables
+            ]);
         }
-
-        $this->render('patents/show.twig', [
-            'patent' => $patent,
-            'user' => $user,
-            'flash' => $variables
-        ]);
-
     }
 
     public function visitPatentsPage()
     {
-
-        if ($this->auth->check()) {
+        if ($this->checkUserLevel(1)) {
             $username = $_SESSION['user'];
             $this->render('patents/new.twig', ['username' => $username]);
-        } else {
-
-            $this->app->flash('error', "You need to be logged in to register a patent");
-            $this->app->redirect("/");
         }
-
     }
 
     public function create()
     {
-        if ($this->auth->guest()) {
-            $this->app->flash("info", "You must be logged on to register a patent");
-            $this->app->redirect("/login");
-        } else {
+        if ($this->checkUserLevel(1)) {
             $request     = $this->app->request;
             $title       = $request->post('title');
             $description = $request->post('description');
@@ -103,13 +96,13 @@ class PatentsController extends Controller
 
     public function destroy($patentId)
     {
-        if ($this->patentRepository->deleteByPatentid($patentId) === 1) {
-            $this->app->flash('info', "Sucessfully deleted '$patentId'");
+        if ($this->checkUserLevel(2)) {
+            if ($this->patentRepository->deleteByPatentid($patentId))  {
+                $this->app->flash('info', "Patent $patentId sucessfully deleted.");
+            } else {
+                $this->app->flash('error', "Could not delete patent $patentId.");
+            }
             $this->app->redirect('/admin');
-            return;
         }
-
-        $this->app->flash('info', "An error ocurred. Unable to delete user '$username'.");
-        $this->app->redirect('/admin');
     }
 }

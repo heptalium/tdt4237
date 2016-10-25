@@ -3,7 +3,9 @@
         {{ title|default(titleVar) }}
     </a>
     <a href="/aboutus" class="item">About us</a>
+    {% if isLoggedIn %}
     <a href="{{ urlFor('showpatents') }}" class="item">Patents</a>
+    {% endif %}
     <div class="right menu">
         {% if isLoggedIn %}
             <a href="#" class="item">Logged in as {{ loggedInUsername }}</a>

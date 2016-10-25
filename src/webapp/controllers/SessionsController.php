@@ -14,14 +14,9 @@ class SessionsController extends Controller
 
     public function authenticate()
     {
-        if ($this->auth->check()) {
-            $username = $this->auth->user()->getUsername();
-            $this->app->flash('info', 'You are already logged in as ' . $username);
-            $this->app->redirect('/');
-            return;
+        if ($this->checkUserLevel(0)) {
+            $this->render('sessions/new.twig', []);
         }
-
-        $this->render('sessions/new.twig', []);
     }
 
     public function create()

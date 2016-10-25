@@ -31,4 +31,27 @@ class Controller
 
         print $this->app->render($template, $variables);
     }
+
+    protected function checkUserLevel($required)
+    {
+        if ($required == 0 and !$this->auth->guest()) {
+            $this->app->flash('info', 'You are already logged in!');
+            $this->app->redirect('/');
+            return false;
+        }
+
+        if ($required >= 1 and $this->auth->guest()) {
+            $this->app->flash('info', 'You must be logged in to view this page!');
+            $this->app->redirect('/');
+            return false;
+        }
+
+        if ($required == 2 and !$this->auth->isAdmin()) {
+            $this->app->flash('info', 'You must be administrator to view this page!');
+            $this->app->redirect('/');
+            return false;
+        }
+
+        return true;
+    }
 }
