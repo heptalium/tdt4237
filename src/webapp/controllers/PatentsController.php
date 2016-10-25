@@ -33,19 +33,10 @@ class PatentsController extends Controller
             $patent = $this->patentRepository->find($patentId);
             $username = $_SESSION['user'];
             $user = $this->userRepository->findByUser($username);
-            $request = $this->app->request;
-            $message = $request->get('msg');
-            $variables = [];
-
-            if($message) {
-                $variables['msg'] = $message;
-
-            }
 
             $this->render('patents/show.twig', [
                 'patent' => $patent,
-                'user' => $user,
-                'flash' => $variables
+                'user' => $user
             ]);
         }
     }
@@ -77,12 +68,13 @@ class PatentsController extends Controller
                 $patent->setDate($date);
                 $patent->setFile($file);
                 $savedPatent = $this->patentRepository->save($patent);
-                $this->app->redirect('/patents/' . $savedPatent . '?msg="Patent succesfully registered');
+                $this->app->flash('success', 'Patent succesfully registered.');
+                $this->app->redirect('/patents/' . $savedPatent);
+            } else {
+                $this->app->flashNow('error', join('<br>', $validation->getValidationErrors()));
+                $this->app->render('patents/new.twig');
             }
         }
-
-            $this->app->flashNow('error', join('<br>', $validation->getValidationErrors()));
-            $this->app->render('patents/new.twig');
     }
 
     public function startUpload()
