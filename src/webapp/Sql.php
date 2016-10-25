@@ -19,7 +19,7 @@ class Sql
     {
         $q1 = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(50) UNIQUE, password VARCHAR(60), email VARCHAR(50), first_name VARCHAR(50), last_name VARCHAR(50), phone VARCHAR(8), company VARCHAR(50), admin INTEGER DEFAULT 0);";
         $q6 = "CREATE TABLE patents (id INTEGER PRIMARY KEY AUTOINCREMENT, company VARCHAR(50), title VARCHAR(100), file VARCHAR(200), description TEXT, date CHAR(8));";
-        $q7 = "CREATE TABLE files (id INTEGER PRIMARY KEY, name VARCHAR(200), type VARCHAR(200) hash CHAR(32), time INTEGER);";
+        $q7 = "CREATE TABLE files (id INTEGER PRIMARY KEY, name VARCHAR(200), type VARCHAR(200), hash CHAR(32), time INTEGER);";
 
         self::$pdo->exec($q1);
         self::$pdo->exec($q6);
