@@ -55,7 +55,12 @@ class PatentRepository
     {
         $statement = $this->pdo->prepare('DELETE FROM patents WHERE id = ?');
         $result = $statement->execute(array($id));
-        return $result;
+
+        if ($result and $statement->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

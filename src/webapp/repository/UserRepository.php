@@ -66,7 +66,12 @@ class UserRepository
     {
         $statement = $this->pdo->prepare('DELETE FROM users WHERE username = ?');
         $result = $statement->execute(array($username));
-        return $result;
+
+        if ($result and $statement->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function all()
@@ -101,7 +106,12 @@ class UserRepository
             $user->getPhone(),
             $user->isAdmin()
         ));
-        return $result;
+
+        if ($result and $statement->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private function updateUser(User $user)
@@ -116,6 +126,11 @@ class UserRepository
             $user->isAdmin(),
             $user->getUserId()
         ));
-        return $result;
+
+        if ($result and $statement->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
