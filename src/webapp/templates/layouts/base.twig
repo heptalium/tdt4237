@@ -26,9 +26,21 @@
             </div>
 
             <div class="eight wide column">
+                {% if flash.success %}
+                    <div class="ui success message">
+                        {{ flash.success }}
+                    </div>
+                {% endif %}
+
                 {% if flash.info %}
                     <div class="ui warning message">
                         {{ flash.info }}
+                    </div>
+                {% endif %}
+
+                {% if flash.error %}
+                    <div class="ui error message">
+                        {{ flash.error }}
                     </div>
                 {% endif %}
 

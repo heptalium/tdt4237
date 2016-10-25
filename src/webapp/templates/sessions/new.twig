@@ -3,18 +3,6 @@
 {% block content %}
     <h2>Login</h2>
 
-    {% if flash.error %}
-        <div class="ui error message">
-            {{ flash.error }}
-        </div>
-    {% endif %}
-
-    {% if flash.success %}
-        <div class="ui success message">
-            {{ flash.success }}
-        </div>
-    {% endif %}
-
     <form action="" method="post" class="ui form">
         <div class="field">
             <label>Username</label>

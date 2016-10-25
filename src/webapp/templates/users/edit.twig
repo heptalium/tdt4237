@@ -4,10 +4,6 @@
     <h2>Edit profile</h2>
 
     <form action="" method="post" class="ui form">
-        <div class="ui error message">
-            {{ flash.error }}
-        </div>
-
         <div class="field">
             <label>First name</label>
             <input type = "text" name="first_name" value= "{{ user.firstName }}">
