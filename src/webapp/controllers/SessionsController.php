@@ -27,7 +27,7 @@ class SessionsController extends Controller
 
         if ($this->auth->checkCredentials($user, $pass)) {
             $_SESSION['user'] = $user;
-            $this->app->flash('info', "You are now successfully logged in as $user.");
+            $this->app->flash('success', "You are now successfully logged in as $user.");
             $this->app->redirect('/');
             return;
         }

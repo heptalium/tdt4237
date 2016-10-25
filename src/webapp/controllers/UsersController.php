@@ -92,7 +92,7 @@ class UsersController extends Controller
                 $user->setLastName($lastName);
                 $this->userRepository->save($user);
 
-                $this->app->flashNow('info', 'Your profile was successfully saved.');
+                $this->app->flashNow('success', 'Your profile was successfully saved.');
                 return $this->render('users/edit.twig', ['user' => $user]);
             } else {
                 $this->app->flashNow('error', join("<br>", $validation->getValidationErrors()));
@@ -105,10 +105,10 @@ class UsersController extends Controller
     {
         if ($this->checkUserLevel(2)) {
             if ($this->userRepository->deleteByUsername($username)) {
-                $this->app->flash('info', "Sucessfully deleted '$username'");
+                $this->app->flash('success', "Sucessfully deleted '$username'");
                 $this->app->redirect('/admin');
             } else {
-                $this->app->flash('info', "An error ocurred. Unable to delete user '$username'.");
+                $this->app->flash('error', "An error ocurred. Unable to delete user '$username'.");
                 $this->app->redirect('/admin');
             }
         }

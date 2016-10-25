@@ -98,7 +98,7 @@ class PatentsController extends Controller
     {
         if ($this->checkUserLevel(2)) {
             if ($this->patentRepository->deleteByPatentid($patentId))  {
-                $this->app->flash('info', "Patent $patentId sucessfully deleted.");
+                $this->app->flash('success', "Patent $patentId sucessfully deleted.");
             } else {
                 $this->app->flash('error', "Could not delete patent $patentId.");
             }
