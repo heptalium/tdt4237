@@ -36,15 +36,19 @@ class FilesController extends Controller
 
     public function put($file)
     {
-        $hash = md5($file['tmp_name'].time());
+        if ($file['error'] === UPLOAD_ERR_OK) {
+            $hash = md5($file['tmp_name'].time());
 
-        $in = fopen($file['tmp_name'], 'r');
-        $out = fopen('uploads/'.$hash.'.dat', 'w');
-        $text = fread($in, $file['size']);
-        $code = base64_encode($text);
-        fwrite($out, $code);
+            $in = fopen($file['tmp_name'], 'r');
+            $out = fopen('uploads/'.$hash.'.dat', 'w');
+            $text = fread($in, $file['size']);
+            $code = base64_encode($text);
+            fwrite($out, $code);
 
-        $id = $this->fileRepository->createFile(new File(null, $file['name'], $file['type'], $hash, time()));
-        return '/files/'.$id.'/'.$file['name'];
+            $id = $this->fileRepository->createFile(new File(null, $file['name'], $file['type'], $hash, time()));
+            return '/files/'.$id.'/'.$file['name'];
+        } else {
+            return null;
+        }
     }
 }
