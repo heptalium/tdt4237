@@ -82,7 +82,7 @@ $app->get('/patents/:patentId', $ns . 'PatentsController:show');
 $app->get('/patents/:patentId/delete', $ns . 'PatentsController:destroy');
 
 // Files
-$app->get('/files/:id/:name', $ns . 'FilesController:get');
+$app->get('/files/:id', $ns . 'FilesController:get');
 
 // Admin restricted area
 $app->get('/admin', $ns . 'AdminController:index')->name('admin');

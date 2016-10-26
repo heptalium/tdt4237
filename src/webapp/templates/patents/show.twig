@@ -14,10 +14,12 @@
             </tr>
 
             {% if patent.user == user.userid or isAdmin %}
+            {% if patent.file is not null %}
             <tr>
                 <td>File</td>
-                <td><a href="{{ patent.file }}">Patent</a></td>
+                <td><a href="/files/{{ patent.file }}">Patent</a></td>
             </tr>
+            {% endif %}
             {% endif %}
         </table>
 

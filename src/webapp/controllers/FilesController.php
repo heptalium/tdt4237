@@ -11,7 +11,7 @@ class FilesController extends Controller
         parent::__construct();
     }
 
-    public function get($id, $name)
+    public function get($id)
     {
         $app = $this->app;
         $auth = $this->auth;
@@ -38,13 +38,16 @@ class FilesController extends Controller
             return $app->response->setStatus(304);
         }
 
-        $app->response->headers->set('Content-Type', $file->getType());
-        $app->response->headers->set('Last-Modified', date('r', $file->getTime()));
-
         $filename = 'uploads/'.$file->getHash().'.dat';
         $handle = fopen($filename, 'r');
         $content = fread($handle, filesize($filename));
         $original = base64_decode($content);
+
+        $app->response->headers->set('Content-Type', $file->getType());
+        $app->response->headers->set('Content-Disposition', 'attachment; filename='.$file->getName());
+        $app->response->headers->set('Content-Length', strlen($original));
+        $app->response->headers->set('Last-Modified', date('r', $file->getTime()));
+
         echo($original);
     }
 
