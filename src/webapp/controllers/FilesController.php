@@ -14,10 +14,24 @@ class FilesController extends Controller
     public function get($id, $name)
     {
         $app = $this->app;
+        $auth = $this->auth;
         $file = $this->fileRepository->getById($id);
+
+        if ($auth->guest()) {
+            echo('403 Forbidden');
+            return $app->response->setStatus(403);
+        }
 
         if ($file === false) {
             return $app->notFound();
+        }
+
+        $user = $auth->user()->getUserId();
+        $admin = $this->auth->isAdmin();
+
+        if ($file->getUser() != $user and !$admin) {
+            echo('403 Forbidden');
+            return $app->response->setStatus(403);
         }
 
         if (strtotime($app->request->headers->get('If-Modified-Since')) >= $file->getTime()) {
@@ -45,7 +59,7 @@ class FilesController extends Controller
             $code = base64_encode($text);
             fwrite($out, $code);
 
-            $id = $this->fileRepository->createFile(new File(null, $file['name'], $file['type'], $hash, time()));
+            $id = $this->fileRepository->createFile(new File(null, $file['name'], $file['type'], $hash, time(), $this->auth->user()->getUserId()));
             return $id;
         } else {
             return null;

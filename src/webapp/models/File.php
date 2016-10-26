@@ -10,13 +10,14 @@ class File
     protected $hash;
     protected $time;
 
-    function __construct($id, $name, $type, $hash, $time)
+    function __construct($id, $name, $type, $hash, $time, $user)
     {
         $this->id = $id;
         $this->name = $name;
         $this->type = $type;
         $this->hash = $hash;
         $this->time = $time;
+        $this->user = $user;
     }
 
     public function getId()
@@ -42,5 +43,10 @@ class File
     public function getTime()
     {
         return $this->time;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
     }
 }

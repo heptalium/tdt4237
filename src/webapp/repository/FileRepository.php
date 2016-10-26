@@ -16,17 +16,18 @@ class FileRepository
 
     private function makeFileFromRow(array $row)
     {
-        $file = new File($row['id'], $row['name'], $row['type'], $row['hash'], $row['time']);
+        $file = new File($row['id'], $row['name'], $row['type'], $row['hash'], $row['time'], $row['user']);
         return $file;
     }
 
     public function createFile($file) {
-        $statement = $this->pdo->prepare('INSERT INTO files (name, type, hash, time) VALUES (?, ?, ?, ?)');
+        $statement = $this->pdo->prepare('INSERT INTO files (name, type, hash, time, user) VALUES (?, ?, ?, ?, ?)');
         $result = $statement->execute(array(
             $file->getName(),
             $file->getType(),
             $file->getHash(),
             $file->getTime(),
+            $file->getUser(),
         ));
         return $this->pdo->lastInsertId();
     }
