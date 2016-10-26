@@ -46,7 +46,7 @@ class FilesController extends Controller
             fwrite($out, $code);
 
             $id = $this->fileRepository->createFile(new File(null, $file['name'], $file['type'], $hash, time()));
-            return '/files/'.$id.'/'.$file['name'];
+            return $id;
         } else {
             return null;
         }

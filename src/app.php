@@ -30,6 +30,8 @@ try {
     $app->db = new PDO('sqlite:app.db');
     // Set errormode to exceptions
     $app->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Enable foreign keys
+    $app->db->exec('PRAGMA foreign_keys = ON');
 } catch (PDOException $e) {
     echo $e->getMessage();
     exit();

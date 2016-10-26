@@ -7,13 +7,14 @@ class Patent
     protected $patentId = null;
     protected $title;
     protected $file;
+    protected $user;
     protected $company;
     protected $description;
     protected $date;
 
-    function __construct($company, $title, $description, $date, $file)
+    function __construct($user, $title, $description, $date, $file)
     {
-        $this->company = $company;
+        $this->user = $user;
         $this->title = $title;
         $this->description = $description;
         $this->date = $date;
@@ -27,6 +28,15 @@ class Patent
 
     public function setPatentId($patentId) {
         $this->patentId = $patentId;
+        return $this;
+    }
+
+    public function getUser() {
+        return $this->user;
+    }
+
+    public function setUser($user) {
+        $this->user = $user;
         return $this;
     }
 

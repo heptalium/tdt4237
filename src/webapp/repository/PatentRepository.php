@@ -17,20 +17,15 @@ class PatentRepository
 
     private function makePatentFromRow(array $row)
     {
-        $patent = new Patent($row['id'], $row['company'], $row['title'], $row['description'], $row['date'], $row['file']);
+        $patent = new Patent($row['user'], $row['title'], $row['description'], $row['date'], $row['file']);
         $patent->setPatentId($row['id']);
         $patent->setCompany($row['company']);
-        $patent->setTitle($row['title']);
-        $patent->setDescription($row['description']);
-        $patent->setDate($row['date']);
-        $patent->setFile($row['file']);
-
         return $patent;
     }
 
     public function find($id)
     {
-        $statement = $this->pdo->prepare('SELECT * FROM patents WHERE id = ?');
+        $statement = $this->pdo->prepare('SELECT * FROM v_patents WHERE id = ?');
         $statement->execute(array($id));
         $result = $statement->fetch();
         if ($result !== false) {
@@ -42,7 +37,7 @@ class PatentRepository
 
     public function all()
     {
-        $statement = $this->pdo->prepare('SELECT * FROM patents');
+        $statement = $this->pdo->prepare('SELECT * FROM v_patents');
         $statement->execute();
         $patents = array();
         while ($row = $statement->fetch()) {
@@ -66,10 +61,10 @@ class PatentRepository
 
     public function save(Patent $patent)
     {
-        $statement = $this->pdo->prepare('INSERT INTO patents (title, company, file, description, date) VALUES (?, ?, ?, ?, ?)');
+        $statement = $this->pdo->prepare('INSERT INTO patents (title, user, file, description, date) VALUES (?, ?, ?, ?, ?)');
         $result = $statement->execute(array(
             $patent->getTitle(),
-            $patent->getCompany(),
+            $patent->getUser(),
             $patent->getFile(),
             $patent->getDescription(),
             $patent->getDate()

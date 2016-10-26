@@ -13,7 +13,7 @@
                 <td>{{ patent.company }}</td>
             </tr>
 
-            {% if user.username == patent.company or user.company == patent.company %}
+            {% if patent.user == user.userid or isAdmin %}
             <tr>
                 <td>File</td>
                 <td><a href="{{ patent.file }}">Patent</a></td>
