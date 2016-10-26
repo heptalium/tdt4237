@@ -45,7 +45,8 @@ class PatentsController extends Controller
     {
         if ($this->checkUserLevel(1)) {
             $username = $_SESSION['user'];
-            $this->render('patents/new.twig', ['username' => $username]);
+            $company = $this->auth->user()->getCompany();
+            $this->render('patents/new.twig', ['username' => $username, 'company' => $company]);
         }
     }
 
@@ -55,7 +56,6 @@ class PatentsController extends Controller
             $request     = $this->app->request;
             $title       = $request->post('title');
             $description = $request->post('description');
-            $company     = $request->post('company');
             $date        = date("dmY");
             $file = $this -> startUpload();
             $user = $this->auth->user()->getUserId();
@@ -67,8 +67,10 @@ class PatentsController extends Controller
                 $this->app->flash('success', 'Patent succesfully registered.');
                 $this->app->redirect('/patents/' . $savedPatent);
             } else {
+                $username = $_SESSION['user'];
+                $company = $this->auth->user()->getCompany();
                 $this->app->flashNow('error', join('<br>', $validation->getValidationErrors()));
-                $this->app->render('patents/new.twig');
+                $this->app->render('patents/new.twig', ['username' => $username, 'company' => $company]);
             }
         }
     }
