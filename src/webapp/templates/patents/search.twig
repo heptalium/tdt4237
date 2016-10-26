@@ -1,0 +1,15 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+    <h2>Search patents</h2>
+
+    <form method="post" class="ui form">
+
+        <div class="field">
+            <label>Search Term</label>
+            <input type="text" name="request">
+        </div>
+
+        <input type="submit" name="submit" value="Search" class="positive ui button">
+    </form>
+{% endblock %}

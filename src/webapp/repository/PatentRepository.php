@@ -46,6 +46,17 @@ class PatentRepository
         return new PatentCollection($patents);
     }
 
+    public function search($term)
+    {
+        $statement = $this->pdo->prepare('SELECT * FROM v_patents WHERE title LIKE :term OR company LIKE :term OR description LIKE :term');
+        $statement->execute(array(':term' => '%'.$term.'%'));
+        $patents = array();
+        while ($row = $statement->fetch()) {
+            $patents[] = $this->makePatentFromRow($row);
+        }
+        return new PatentCollection($patents);
+    }
+
     public function deleteByPatentid($id)
     {
         $statement = $this->pdo->prepare('DELETE FROM patents WHERE id = ?');

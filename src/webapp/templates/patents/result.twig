@@ -1,0 +1,31 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+    <h2>Search result</h2>
+
+    {% if patents is not empty %}
+    <table class="ui single line table">
+        <thead>
+            <tr>
+                <th> Title </th>
+                <th> Company/User </th>
+                <th> Description </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for patent in patents %}
+            <tr>
+                <td><a href="/patents/{{patent.patentId}}">{{ patent.title }}</a></td>
+                <td> {{ patent.company }} </td>
+                <td> {{ patent.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="ui error message">
+        Sorry, there is no patent matching your request!
+    </div>
+    {% endif %}
+{% endblock %}

@@ -77,6 +77,9 @@ $app->get('/patents', $ns . 'PatentsController:index')->name('showpatents');
 $app->get('/patents/register', $ns . 'PatentsController:visitPatentsPage')->name('registerpatent');
 $app->post('/patents/register', $ns . 'PatentsController:create');
 
+$app->get('/patents/search', $ns . 'PatentsController:form')->name('searchpatent');
+$app->post('/patents/search', $ns . 'PatentsController:search');
+
 $app->get('/patents/:patentId', $ns . 'PatentsController:show');
 
 $app->get('/patents/:patentId/delete', $ns . 'PatentsController:destroy');

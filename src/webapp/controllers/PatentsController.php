@@ -75,6 +75,25 @@ class PatentsController extends Controller
         }
     }
 
+    public function form()
+    {
+        if ($this->checkUserLevel(1)) {
+            $this->render('patents/search.twig');
+        }
+    }
+
+    public function search()
+    {
+        if ($this->checkUserLevel(1)) {
+            $term = $this->app->request->post('request');
+            $patents = $this->patentRepository->search($term);
+            if (!is_null($patents)) {
+                $patents->sortByDate();
+            }
+            $this->render('patents/result.twig', ['patents' => $patents]);
+        }
+    }
+
     public function startUpload()
     {
         if(isset($_POST['submit']))
