@@ -27,20 +27,12 @@ class RegistrationFormValidation
 
     private function validate($username, $password, $first_name, $last_name, $phone, $company)
     {
-        if (empty($password)) {
-            $this->validationErrors[] = 'Password cannot be empty';
+        if (strlen($password) < 10) {
+            $this->validationErrors[] = 'Password is too short! At least 10 characters required!';
         }
 
-        if (strlen($password) < 8) {
-            $this->validationErrors[] = "Password length >= 8!";
-        }
-
-        if (!preg_match("#[0-9]+#", $password)) {
-            $this->validationErrors[] = "Password must include at least one number!";
-        }
-
-        if (!preg_match("#[a-zA-Z]+#", $password)) {
-            $this->validationErrors[] = "Password must include at least one letter!";
+        if ($this->checkPasswordStrength($password) < 3) {
+            $this->validationErrors[] = "Password is not secure enough! At least characters from three of the following character classes are required: lowercase characters, uppercase characters, numbers, special characters.";
         }
 
         if(empty($first_name)) {
@@ -67,5 +59,28 @@ class RegistrationFormValidation
         if (preg_match('/^[A-Za-z0-9_]+$/', $username) === 0) {
             $this->validationErrors[] = 'Username can only contain letters and numbers';
         }
+    }
+
+    private function checkPasswordStrength($password)
+    {
+        $strength = 0;
+
+        if (preg_match("/([a-z]+)/", $password)) {
+            $strength++;
+        }
+
+        if (preg_match("/([A-Z]+)/", $password)) {
+            $strength++;
+        }
+
+        if (preg_match("/([0-9]+)/", $password)) {
+            $strength++;
+        }
+
+        if (preg_match("/[^a-zA-Z0-9]/", $password)) {
+            $strength++;
+        }
+
+        return $strength;
     }
 }
