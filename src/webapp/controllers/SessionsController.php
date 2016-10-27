@@ -28,6 +28,8 @@ class SessionsController extends Controller
         if ($this->auth->checkCredentials($user, $pass)) {
             session_regenerate_id();
             $_SESSION['user'] = $user;
+            $_SESSION['time'] = time();
+            $_SESSION['host'] = $_SERVER['REMOTE_ADDR'];
             $this->app->flash('success', "You are now successfully logged in as $user.");
             $this->app->redirect('/');
             return;
@@ -39,10 +41,7 @@ class SessionsController extends Controller
 
     public function destroy()
     {
-        session_unset();
-        session_commit();
-        session_start();
-        session_regenerate_id();
+        $this->auth->logout();
         $this->app->flash('success', 'You are now logged out.');
         $this->app->redirect('/');
     }

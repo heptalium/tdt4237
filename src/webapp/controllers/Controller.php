@@ -34,6 +34,12 @@ class Controller
 
     protected function checkUserLevel($required)
     {
+        if (!$this->auth->validity()) {
+            $this->app->flash('error', 'Your session has expired!');
+            $this->app->redirect('/');
+            return false;
+        }
+
         if ($required == 0 and !$this->auth->guest()) {
             $this->app->flash('error', 'You are already logged in!');
             $this->app->redirect('/');

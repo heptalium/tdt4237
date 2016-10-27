@@ -82,11 +82,27 @@ class Auth
         throw new Exception('Not logged in but called Auth::isAdmin() anyway');
     }
 
+    public function validity()
+    {
+        if (isset($_SESSION['user'])) {
+            if ($_SESSION['time'] + 1800 >= time() and $_SESSION['host'] == $_SERVER['REMOTE_ADDR']) {
+                $_SESSION['time'] = time();
+                return true;
+            } else {
+                $this->logout();
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
     public function logout()
     {
-        if(!$this->guest()) {
-            session_destroy();
-        }
+        session_unset();
+        session_commit();
+        session_start();
+        session_regenerate_id();
     }
 
 }
