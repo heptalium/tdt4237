@@ -19,6 +19,7 @@ class Controller
         $this->fileRepository = $this->app->fileRepository;
         $this->auth = $this->app->auth;
         $this->hash = $this->app->hash;
+        $this->regenerateSession();
     }
 
     protected function render($template, $variables = [])
@@ -30,6 +31,15 @@ class Controller
         }
 
         print $this->app->render($template, $variables);
+    }
+
+    function regenerateSession(){
+        if (!isset($_SESSION['created'])) {
+            $_SESSION['created'] = time();
+        } else if (time() - $_SESSION['created'] > 300) {
+            session_regenerate_id(true);
+            $_SESSION['created'] = time();
+        }
     }
 
     protected function checkUserLevel($required)
