@@ -17,7 +17,7 @@ class Sql
      */
     static function up()
     {
-        $q[] = "CREATE TABLE users (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username VARCHAR(50) NOT NULL UNIQUE, password VARCHAR(60), email VARCHAR(50), first_name VARCHAR(50), last_name VARCHAR(50), phone VARCHAR(8), company VARCHAR(50), admin INTEGER NOT NULL DEFAULT 0)";
+        $q[] = "CREATE TABLE users (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username VARCHAR(50) NOT NULL UNIQUE, password VARCHAR(60), email VARCHAR(50), first_name VARCHAR(50), last_name VARCHAR(50), phone VARCHAR(8), company VARCHAR(50), admin INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0, locked INTEGER NOT NULL DEFAULT 0)";
         $q[] = "CREATE TABLE files (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(200), type VARCHAR(200), hash CHAR(32), time INTEGER, user INTEGER NOT NULL, FOREIGN KEY(user) REFERENCES users(id))";
         $q[] = "CREATE TABLE patents (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, title VARCHAR(100), file INTEGER NULL, description TEXT, date CHAR(8), FOREIGN KEY(user) REFERENCES users(id), FOREIGN KEY(file) REFERENCES files(id))";
         $q[] = "CREATE VIEW v_patents AS SELECT patents.id, patents.user, users.company, patents.title, patents.file, patents.description, patents.date FROM patents LEFT JOIN users ON patents.user = users.id";

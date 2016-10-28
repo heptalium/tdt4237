@@ -35,8 +35,13 @@ class SessionsController extends Controller
             return;
         }
 
-        $this->app->flashNow('error', 'Incorrect user/pass combination.');
-        $this->render('sessions/new.twig', []);
+        if ($this->auth->error() != 3) {
+            $this->app->flashNow('error', 'Incorrect user/pass combination.');
+            $this->render('sessions/new.twig', []);
+        } else {
+            $this->app->flash('error', 'Your user account has been locked. Please try again later.');
+            $this->app->redirect('/');
+        }
     }
 
     public function destroy()

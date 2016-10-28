@@ -14,6 +14,7 @@ class User
     protected $company = null;
     protected $email   = null;
     protected $isAdmin = 0;
+    protected $locked;
 
     function __construct($username, $hash, $firstName, $lastName, $phone, $company)
     {
@@ -115,4 +116,12 @@ class User
         return $this;
     }
 
+    public function isLocked() {
+        return $this->locked;
+    }
+
+    public function setLocked($locked) {
+        $this->locked = $locked;
+        return $this;
+    }
 }

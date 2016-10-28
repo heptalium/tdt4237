@@ -26,6 +26,7 @@ class UserRepository
         $user->setPhone($row['phone']);
         $user->setCompany($row['company']);
         $user->setIsAdmin($row['admin']);
+        $user->setLocked($row['locked'] > time());
 
         if (!empty($row['email'])) {
             $user->setEmail(new Email($row['email']));
@@ -60,6 +61,21 @@ class UserRepository
         } else {
             return false;
         }
+    }
+
+    public function lockUserByUsername($username) {
+        $this->pdo->prepare('UPDATE users SET attempts = attempts + 1 WHERE username = ?')->execute(array($username));
+        $statement = $this->pdo->prepare('SELECT attempts FROM users WHERE username = ? AND attempts >= 3');
+        $statement->execute(array($username));
+        $result = $statement->fetch();
+        if ($result) {
+            $time = time() + 300 * pow(2, $result['attempts'] - 3);
+            $this->pdo->prepare('UPDATE users SET locked = ? WHERE username = ?')->execute(array($time, $username));
+        }
+    }
+
+    public function unlockUserByUsername($username) {
+        $this->pdo->prepare('UPDATE users SET attempts = 0 WHERE username = ?')->execute(array($username));
     }
 
     public function deleteByUsername($username)

@@ -19,6 +19,8 @@ class Auth
      */
     private $userRepository;
 
+    private $error = 0;
+
     public function __construct(UserRepository $userRepository, Hash $hash)
     {
         $this->userRepository = $userRepository;
@@ -30,10 +32,23 @@ class Auth
         $user = $this->userRepository->findByUser($username);
 
         if ($user === false) {
+            $this->error = 2;
             return false;
         }
 
-        return $this->hash->check($password, $user->getHash());
+        if ($user->isLocked()) {
+            $this->error = 3;
+            return false;
+        }
+
+        if ($this->hash->check($password, $user->getHash())) {
+            $this->userRepository->unlockUserByUsername($username);
+            return true;
+        } else {
+            $this->userRepository->lockUserByUsername($username);
+            $this->error = 1;
+            return false;
+        }
     }
 
     /**
@@ -105,4 +120,7 @@ class Auth
         session_regenerate_id();
     }
 
+    public function error() {
+        return $this->error;
+    }
 }
