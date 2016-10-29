@@ -47,6 +47,11 @@ $app->patentRepository = new PatentRepository($app->db);
 $app->fileRepository = new FileRepository($app->db);
 $app->auth = new Auth($app->userRepository, $app->hash);
 
+$app->response->headers->set('Content-Security-Policy', 'default-src \'none\'; style-src \'self\' cdnjs.cloudflare.com fonts.googleapis.com; font-src cdnjs.cloudflare.com fonts.gstatic.com;');
+$app->response->headers->set('X-Content-Type-Options', 'nosniff');
+$app->response->headers->set('X-Frame-Options', 'DENY');
+$app->response->headers->set('X-XSS-Protection', '1; mode=block');
+
 $ns ='tdt4237\\webapp\\controllers\\';
 
 // Static pages
