@@ -15,7 +15,7 @@ chdir(__DIR__ . '/../');
 
 $app = new Slim([
     'templates.path' => __DIR__.'/webapp/templates/',
-    'debug' => true,
+    'debug' => false,
     'view' => new Twig()
 
 ]);
